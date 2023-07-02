@@ -1,0 +1,14 @@
+[Unit]
+Description=alarmpi
+
+[Service]
+User=pi
+
+WorkingDirectory=/home/pi/alarmpi
+ExecStart=/usr/bin/python3 main.py
+
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
