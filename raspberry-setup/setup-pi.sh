@@ -7,7 +7,7 @@ git config --global user.email "ben@alarmpi"
 # remove unnecessary packages
 sudo apt purge xserver* lightdm* raspberrypi-ui-mods vlc* lxde* chromium* desktop* \
                 gnome* gstreamer* gtk* hicolor-icon-theme* lx* mesa* pulseaudio \
-                bluez cups triggerhappy modemmanager
+                bluez cups triggerhappy modemmanager avahi-daemon
 sudo apt autoremove
 
 # install required packages
