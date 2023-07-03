@@ -13,14 +13,17 @@ import outputs.relais
 import inputs.door
 import outputs.led
 import web.webserver as webserver
+import settings
+
 
 #######################################################################################################################
 # ALARM SETTINGS
 #######################################################################################################################
-TEST_MODE = False
-KEYPAD_PASSWORD = '135' if TEST_MODE else '1357'
+cfg = settings.get_settings()
+TEST_MODE = cfg.test_mode
+KEYPAD_PASSWORD = cfg.password
 KEYPAD_RESET = '*'
-ALARM_DURATION_SECONDS = 10 if TEST_MODE else 90 
+ALARM_DURATION_SECONDS = cfg.alarm_duration 
 
 #######################################################################################################################
 # PIN DEFINITIONS (BCM numbering)
@@ -189,6 +192,10 @@ if __name__ == "__main__":
                 format="[%(asctime)s.%(msecs)03d] %(levelname)-7s %(message)s", # [%(name)s.%(funcName)s:%(lineno)d]",
                 datefmt="%d.%m.%Y %H:%M:%S",
                 stream=sys.stdout)
+
+    logging.info('Keypad password: "%s"' % (KEYPAD_PASSWORD))
+    logging.info('Test Mode is ' + ('enabled' if TEST_MODE else 'disabled'))
+    logging.info('Alarm duration: %d seconds' % (ALARM_DURATION_SECONDS))
 
     try:
         setup()
