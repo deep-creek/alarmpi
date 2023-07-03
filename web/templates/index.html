@@ -27,8 +27,8 @@
       {% for output in outputs %}
         <tr>
           <td style="text-align: center">
-            <form action="/{{ output.name }}" method="POST">
-              <button id="{{ output.name }}" class="rel">{{ output.name }}</button>
+            <form action="/{{ output.name() }}" method="POST">
+              <button id="{{ output.name() }}" class="rel">{{ output.name() }}</button>
               </br>
             </form>
           </td>

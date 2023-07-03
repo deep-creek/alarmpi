@@ -20,7 +20,7 @@ class Server:
         def reroute(outputName):
             found = False
             for o in outputs:
-                if outputName == o.name:
+                if outputName == o.name():
                     o.toggle()
                     found = True
                
