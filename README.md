@@ -30,7 +30,7 @@ stateDiagram
     AlarmTimedOut --> Armed     : Door closed  
     AlarmTimedOut --> Disarmed  : Correct code entered
     
-    Disarmed --> Armed          : Door closed / Reset code entered
+    Disarmed --> Armed          : Door closed / Reset code entered AND Door closed
 
     classDef greenState fill:#00ff00,color:black,font-weight:bold,stroke-width:2px,stroke:grey
     classDef yellowState fill:#ffff00,color:black,font-weight:bold,stroke-width:2px,stroke:grey

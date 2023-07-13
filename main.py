@@ -102,7 +102,7 @@ def handle_event(evt):
         set_alarm_state(AlarmStates.ARMED)
         
     elif AlarmEvents.CODE_RESET == evt:
-        if ALARM_STATE == AlarmStates.DISARMED:
+        if ALARM_STATE == AlarmStates.DISARMED and IN_DOOR.is_closed():
             set_alarm_state(AlarmStates.ARMED)
         else:
             None # just ignore it, as CODE_RESET resets the input
