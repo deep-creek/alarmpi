@@ -168,8 +168,6 @@ def check_password(input):
 def setup():
     GPIO.setwarnings(True)
 
-    [out.setup() for out in OUTPUTS]
-
     IN_KEYPAD.setup(check_password)
 
     def door_opened():

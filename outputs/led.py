@@ -8,7 +8,7 @@ class Led(gpiozero.LED):
     def __init__(self, bcm_pin : int, name : str):
         super().__init__(bcm_pin)
         self._name = name
-        self.setup = self.off
+        self.off()
 
     def is_on(self) -> bool:
         return self.is_lit
