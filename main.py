@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import time
-import RPi.GPIO as GPIO
 import threading
 import enum
 import logging
@@ -28,8 +27,6 @@ ALARM_DURATION_SECONDS = cfg.alarm_duration
 #######################################################################################################################
 # PIN DEFINITIONS (BCM numbering)
 #######################################################################################################################
-GPIO.setmode(GPIO.BCM)
-
 PIN_KEYPAD_ROW  = [26,19,13,6] 
 PIN_KEYPAD_COL  = [5,11,9,10] 
 PIN_REL_1       = 12
@@ -166,7 +163,6 @@ def check_password(input):
         logging.warning('Wrong code entered "%s"' % (input))
 
 def setup():
-    GPIO.setwarnings(True)
 
     IN_KEYPAD.setup(check_password)
 
@@ -181,7 +177,6 @@ def cleanup():
     logging.debug("Cleaning up")
     reset_alarm()
     [out.off() for out in OUTPUTS]
-    GPIO.cleanup() # cleanup all GPIO
 
 
 if __name__ == "__main__":
