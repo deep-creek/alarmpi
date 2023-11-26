@@ -142,6 +142,7 @@ def set_alarm_state(new_state):
             OUT_LED_RED2.on()
         time.sleep(0.2)
         OUT_LED_RED3.on()
+        OUT_REL_NIGHTLIGHT.off()
     
     elif AlarmStates.ALARM == new_state:
         OUT_REL_BLINDS.on()
