@@ -23,11 +23,27 @@
         </h4>
       </td>
     <tr>
+    <tr>
+      <td style="text-align: center">
+        <form action="/armDisarm/ARM" method="POST">
+          <button id="ARM" class="rel">ARM</button>
+        </form>
+        <form action="/armDisarm/DISARM" method="POST">
+          <button id="DISARM" class="rel">DISARM</button>
+        </form>
+        <form action="/armDisarm/RESET" method="POST">
+          <button id="RESET" class="rel">RESET</button>
+        </form>
+      </td>
+    <tr>
+    <tr>
+      <td>&nbsp;</td>
+    <tr>
     {% block body %}
       {% for output in outputs %}
         <tr>
           <td style="text-align: center">
-            <form action="/{{ output.name() }}" method="POST">
+            <form action="/outputs/{{ output.name() }}" method="POST">
               <button id="{{ output.name() }}" class="rel">{{ output.name() }}</button>
               </br>
             </form>

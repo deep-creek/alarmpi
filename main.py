@@ -219,7 +219,15 @@ if __name__ == "__main__":
     try:
         setup()
 
+        
+        def arm():
+            set_alarm_state(AlarmStates.ARMED)
+        def disarm():
+            set_alarm_state(AlarmStates.DISARMED)
+        def reset():
+            handle_event(AlarmEvents.CODE_RESET)
+
         # the webserver.Server does not return
-        httpEndpoint = webserver.Server(OUTPUTS)
+        httpEndpoint = webserver.Server(OUTPUTS, arm, disarm, reset)
     finally:
         cleanup()
