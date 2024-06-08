@@ -22,6 +22,7 @@ cfg = settings.get_settings()
 TEST_MODE = cfg.test_mode
 KEYPAD_PASSWORD = cfg.password
 KEYPAD_RESET = '*'
+KEYPAD_B = 'B'
 ALARM_DURATION_SECONDS = cfg.alarm_duration 
 
 #######################################################################################################################
@@ -111,6 +112,20 @@ def handle_event(evt):
         logging.warning("************ Unable to handle " + evt.__str__() +
                 " while in AlarmState: " + ALARM_STATE.__str__())
             
+def handle_light_request():
+    global ALARM_STATE
+    if ALARM_STATE == AlarmStates.DISARMED:
+        def off():
+            logging.info("Turning off night light")
+            OUT_REL_NIGHTLIGHT.off()
+
+        if OUT_REL_NIGHTLIGHT.is_on():
+            off()
+        else:
+            logging.info("Switch night light on")
+            OUT_REL_NIGHTLIGHT.on()
+            threading.Timer(120, off).start()
+
 def set_alarm_state(new_state):
     global ALARM_STATE
     if ALARM_STATE != new_state:
@@ -124,6 +139,7 @@ def set_alarm_state(new_state):
             OUT_LED_RED2.on()
         time.sleep(0.2)
         OUT_LED_RED3.on()
+        OUT_REL_NIGHTLIGHT.off()
     
     elif AlarmStates.ALARM == new_state:
         OUT_REL_BLINDS.on()
@@ -159,6 +175,9 @@ def check_password(input):
     elif KEYPAD_RESET == input[-1:]:
         handle_event(AlarmEvents.CODE_RESET)
         IN_KEYPAD.clear_input()
+    elif KEYPAD_B == input[-1:]:
+        handle_light_request()
+        IN_KEYPAD.clear_input()
     elif len(input) > 0 and not KEYPAD_PASSWORD.startswith(input):
         logging.warning('Wrong code entered "%s"' % (input))
 
@@ -193,10 +212,15 @@ if __name__ == "__main__":
     try:
         setup()
 
-        httpEndpoint = webserver.Server(OUTPUTS)
+        
+        def arm():
+            set_alarm_state(AlarmStates.ARMED)
+        def disarm():
+            set_alarm_state(AlarmStates.DISARMED)
+        def reset():
+            handle_event(AlarmEvents.CODE_RESET)
 
-        while True:
-            time.sleep(1)
-
+        # the webserver.Server does not return
+        httpEndpoint = webserver.Server(OUTPUTS, arm, disarm, reset)
     finally:
         cleanup()
