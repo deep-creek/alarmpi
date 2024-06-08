@@ -13,7 +13,7 @@ class Relais(gpiozero.OutputDevice):
         self.off()
         
     def is_on(self):
-        return self.value == False
+        return self.value == 1
 
     def name(self):
         return self._name
