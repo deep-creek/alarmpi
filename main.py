@@ -53,11 +53,11 @@ IN_KEYPAD = inputs.keypad.Keypad(PIN_KEYPAD_ROW, PIN_KEYPAD_COL)
 # OUTPUTS
 #######################################################################################################################
 # relais channels
-OUT_REL_BLINDS      = outputs.relais.Relais(PIN_REL_1, "blinds")
+OUT_REL_CARPORT     = outputs.relais.Relais(PIN_REL_1, "carport")
 OUT_REL_ALARM       = outputs.relais.Relais(PIN_REL_2, "alarm")
 OUT_REL_NIGHTLIGHT  = outputs.relais.Relais(PIN_REL_3, "nightlight")
-OUT_REL_UNUSED      = outputs.relais.Relais(PIN_REL_4, "unused")
-RELAIS              = [OUT_REL_BLINDS, OUT_REL_ALARM, OUT_REL_NIGHTLIGHT, OUT_REL_UNUSED]
+OUT_REL_BLINDS      = outputs.relais.Relais(PIN_REL_4, "unused")
+RELAIS              = [OUT_REL_CARPORT, OUT_REL_ALARM, OUT_REL_NIGHTLIGHT, OUT_REL_BLINDS]
 
 # leds
 OUT_LED_RED1        = outputs.led.Led(PIN_LED_RED1, "redLight1")
@@ -65,7 +65,7 @@ OUT_LED_RED2        = outputs.led.Led(PIN_LED_RED2, "redLight2")
 OUT_LED_RED3        = outputs.led.Led(PIN_LED_RED3, "redLight3")
 LEDS                = [OUT_LED_RED1, OUT_LED_RED2, OUT_LED_RED3]
 
-OUTPUTS = RELAIS
+OUTPUTS = RELAIS.copy()
 OUTPUTS.extend(LEDS)
 
 # alarm state
@@ -182,7 +182,6 @@ def check_password(input):
         logging.warning('Wrong code entered "%s"' % (input))
 
 def setup():
-
     IN_KEYPAD.setup(check_password)
 
     def door_opened():
@@ -221,6 +220,6 @@ if __name__ == "__main__":
             handle_event(AlarmEvents.CODE_RESET)
 
         # the webserver.Server does not return
-        httpEndpoint = webserver.Server(OUTPUTS, arm, disarm, reset)
+        httpEndpoint = webserver.Server(RELAIS, arm, disarm, reset)
     finally:
         cleanup()

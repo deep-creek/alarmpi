@@ -3,65 +3,115 @@
 
 <head>
   <title>IOT Relais Steurung</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <style>
+    .mybutton, .button-arm {
+      width: 60%; /* Half the width on mobile */
+      max-width: 600px; /* Set a maximum width */
+      height: 60px;
+      border-radius: 20px; /* Rounded corners */
+      border: none;
+      transition: background-color 0.3s ease;
+      margin: 10px auto; /* Center the button */
+      display: block; /* Make the button a block element for centering */
+      font-size: 1.2em; /* Adjust font size as needed */
+      cursor: pointer; /* Make it clear it's clickable */
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3); /* Add a subtle shadow */
+    }
+
+    .button-arm {
+      width: 200px;
+    }
+    
+    /* Media query for larger screens (if needed) */
+    @media (min-width: 768px) { /* Example breakpoint */
+      .amybutton {
+        width: 600px; /* Full width on larger screens */
+      }
+    }
+    </style>
 </head>
-<style>
-  table,
-  td,
-  tr {
-    width: 30%;
-  }
-</style>
 
 <body>
+  <div class="d-flex flex-column justify-content-center">
+    <h1 class="p-2 mx-5 text-center">Alarm</h1>
+    <div class="d-flex flex-row justify-content-center">
+      <button id="arm" class="p-2 mx-2 btn btn-info armDisarm button-arm">ARM</button>
+      <button id="disarm" class="p-2 mx-2 btn btn-info armDisarm button-arm">DISARM</button>
+      <button id="reset" class="p-2 mx-2 btn btn-info armDisarm button-arm">RESET</button>
+    </div>
 
-  <table style="float:left; width:100%; max-width: 400px;">
-    <tr style="text-align:center">
-      <td>
-        <h4 style="text-align: center; color:Tomato">
-          <center>Alarm Test<center>
-        </h4>
-      </td>
-    <tr>
-    <tr>
-      <td style="text-align: center">
-        <form action="/armDisarm/ARM" method="POST">
-          <button id="ARM" class="rel">ARM</button>
-        </form>
-        <form action="/armDisarm/DISARM" method="POST">
-          <button id="DISARM" class="rel">DISARM</button>
-        </form>
-        <form action="/armDisarm/RESET" method="POST">
-          <button id="RESET" class="rel">RESET</button>
-        </form>
-      </td>
-    <tr>
-    <tr>
-      <td>&nbsp;</td>
-    <tr>
+    <h1 class="p-2 mx-5 mt-10 text-center">Outputs</h1>
     {% block body %}
-      {% for output in outputs %}
-        <tr>
-          <td style="text-align: center">
-            <form action="/outputs/{{ output.name() }}" method="POST">
-              <button id="{{ output.name() }}" class="rel">{{ output.name() }}</button>
-              </br>
-            </form>
-          </td>
-        <tr>
-      {% endfor %}
+    {% for output in outputs %}
+      <button id="{{ output.name() }}" class="btn btn-warning output mybutton">{{ output.name().upper() }}</button>
+    {% endfor %}
     {% endblock %}
+  </div> <!--button-container-->
 
-  <tr>
-    <td style="text-align: center">
-      <form action="/all-off" method="POST">
-        <button id="off" class="rel">All OFF</button>
-        </br>
-      </form>
-    </td>
-  <tr>
-  </table>
-
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
+
+
+<script>
+  function registerOutput(output) {
+    const lightButton = document.getElementById(output);
+
+    lightButton.addEventListener('click', () => {  // Add click event listener
+        fetch('/outputs/' + output + '/toggle', { method: 'GET' }); // Make POST request to toggle
+    });
+  }
+  function registerAction(action) {
+    const actionButton = document.getElementById(action);
+
+    actionButton.addEventListener('click', () => {
+        fetch('/armDisarm/' + action.toUpperCase(), { method: 'POST' });
+    });
+  }
+
+  function updateStatus() {
+    fetch('outputs/')
+        .then(response => {
+            if (!response.ok) {
+                console.error("Error fetching status:", response.status);
+                return { color: "gray" }; // Default to gray on error
+            }
+            return response.json();
+        })
+        .then(data => {
+            for (const output of Object.keys(data)) {
+                const status = data[output];
+                
+                document.getElementById(output).style.backgroundColor = status ? "yellow" : "lightgrey";
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching status:", error);
+    });
+  }
+
+  // You can then iterate over the NodeList:
+  document.querySelectorAll('button.armDisarm').forEach(button => { registerAction(button.id) });
+  document.querySelectorAll('button.output').forEach(button => { registerOutput(button.id) });
+
+  // Initial update
+  updateStatus();
+
+  // Event listener for visibility changes
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      window.myIntervalId = setInterval(updateStatus, 500);
+    } else {
+      clearInterval(window.myIntervalId);
+    }
+  });
+
+  window.myIntervalId = setInterval(updateStatus, 500);
+
+</script>
 
 </html>
